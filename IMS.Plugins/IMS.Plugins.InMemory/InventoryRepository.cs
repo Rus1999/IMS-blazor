@@ -14,7 +14,8 @@ namespace IMS.Plugins.InMemory
                 new Inventory() { InventoryId = 1, InventoryName = "Bike Seat", Quantity = 10, Price = 2},
                 new Inventory() { InventoryId = 2, InventoryName = "Bike Body", Quantity = 10, Price = 15 },
                 new Inventory() { InventoryId = 3, InventoryName = "Bike Wheels", Quantity = 20, Price = 8 },
-                new Inventory() { InventoryId = 4, InventoryName = "Bike Pedels", Quantity = 20, Price = 1 }
+                new Inventory() { InventoryId = 4, InventoryName = "Bike Pedels", Quantity = 20, Price = 1 },
+                new Inventory() { InventoryId = 7, InventoryName = "Punyarit Klaphachon", Quantity = 21, Price = 7 }
             };
         }
 
