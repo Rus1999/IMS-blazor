@@ -1,5 +1,13 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@* 
+    AppAseembly will look for any coresponse page component 
+    If the page component are on the other project we can use the AdditionalAssembies attribute to look for it
+    the Router will look for the NavLink that specify path(href)
+*@
+<Router AppAssembly="@typeof(App).Assembly"> 
     <Found Context="routeData">
+@* 
+    when the component is located it will initialize the component and will display in the correct position that are specify by the MainLayout 
+*@
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>

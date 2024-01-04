@@ -29,6 +29,9 @@ builder.Services.AddSingleton<IInventoryRepository, InventoryRepository>(); // m
 // when mutiple user it will send it own copy to the user
 builder.Services.AddTransient<IViewInventoriesByNameUseCase, ViewInventoriesByNameUseCase>(); // map <abstraction, implementations>
 
+// AddScoped the instance of the class is store as long as the life time of signalr and will be reuse the same instance with it's lifetime
+//  example with when reload the web it's will disconnect the signalr 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
