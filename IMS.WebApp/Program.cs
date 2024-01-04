@@ -7,14 +7,27 @@ using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// registered the service for all the pipeline middleware
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
-builder.Services.AddSingleton<IInventoryRepository, InventoryRepository>();
+// AddSingleton, AddTransient is a lifetime management to allow the framework to provide the instance of class whenever needed
+//  and also use to indicate how long these instance will live
 
-builder.Services.AddTransient<IViewInventoriesByNameUseCase, ViewInventoriesByNameUseCase>();
+// whenever the usecase is require by the blazor application then it will see that the usecase class is require the IInventoryRepository
+//  interface with implementation by InventoryRepository and it will find that the it's already has the interface then it will not
+//  create a new instance and provide that already create instance into the instructure of the usecase class and use it
+// AddSingleton indicate that when the application require the instance of the class it will create and store the instance in the application
+//  and will stay when the application is running
+//  when mutiple user it will send the same instance to use
+builder.Services.AddSingleton<IInventoryRepository, InventoryRepository>(); // mapping the interface with the implementation
+
+// when component is initiailize the framework will provide the instance of ViewInventoriesByNameUseCase class
+// Transient indicate that whenever we require the instance of the class
+//  the frame work will not store the instance of the class anywhere
+// when mutiple user it will send it own copy to the user
+builder.Services.AddTransient<IViewInventoriesByNameUseCase, ViewInventoriesByNameUseCase>(); // map <abstraction, implementations>
 
 var app = builder.Build();
 

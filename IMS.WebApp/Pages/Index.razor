@@ -1,5 +1,9 @@
 ﻿@page "/"
-@inject IViewInventoriesByNameUseCase ViewInventoriesByNameUseCase
+<!-- 
+    feed instance of ViewInventoriesByNameUseCase from outside
+    1: tell this razor component that it's require the instance of ViewInventoriesByNameUseCase abstraction
+-->
+@inject IViewInventoriesByNameUseCase ViewInventoriesByNameUseCase 
 
 <ul>
     @foreach (var inv in _inventories)
@@ -15,6 +19,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // doesn't use the new keyword for the usecase
+        // return empty list when not found
         _inventories = (await ViewInventoriesByNameUseCase.ExecuteAsync("")).ToList();
     }
 }

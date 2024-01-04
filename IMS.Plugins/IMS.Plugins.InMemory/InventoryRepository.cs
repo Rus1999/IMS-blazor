@@ -3,6 +3,7 @@ using IMS.UseCases.PluginInterfaces;
 
 namespace IMS.Plugins.InMemory
 {
+    // abstraction by implementations of IInventoryRepository then the InventoryRepository class can be use as a plugin
     public class InventoryRepository : IInventoryRepository
     {
         private List<Inventory> _inventories;
@@ -21,8 +22,9 @@ namespace IMS.Plugins.InMemory
 
         public async Task<IEnumerable<Inventory>> GetInventoriesByNameAsync(string name)
         {
-            if (string.IsNullOrWhiteSpace(name)) return await Task.FromResult(_inventories);
+            if (string.IsNullOrWhiteSpace(name)) return await Task.FromResult(_inventories); // return list if search is not specify
 
+            // else return IEnumerable that contains name 
             return _inventories.Where(x => x.InventoryName.Contains(name, StringComparison.OrdinalIgnoreCase));
         }
     }

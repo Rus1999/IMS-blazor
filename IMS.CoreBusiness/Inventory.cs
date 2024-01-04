@@ -4,7 +4,7 @@
     {
         public int InventoryId { get; set; }
 
-        public string InventoryName { get; set; } = string.Empty;
+        public string InventoryName { get; set; } = string.Empty; // to avoid nullable refference type
 
         public int Quantity { get; set; }
 
