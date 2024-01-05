@@ -26,13 +26,14 @@
     // two way binding with the @bind-value when the value of the variable will be in the input also when the input value is change to variable will refect that
     private string inventoryNameToSearch = string.Empty;
 
-    // when the search button is click we will pass the value of the inventoryNameToSearch into the parent component
+    // parameter for when the search button is click we will pass the value of the inventoryNameToSearch into the parent component
     [Parameter] // exposed as the parameter for the parent component
     public EventCallback<string> OnSearchInventory { get; set; }
 
+    // event handler
     private void OnSearch()
     {
-        // grab the inventoryNameToSearch value and then call the OnSearchInventory
+        // grab the inventoryNameToSearch value and then call the OnSearchInventory to pass the value to parent component
         OnSearchInventory.InvokeAsync(inventoryNameToSearch);
     }
 }
