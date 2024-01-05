@@ -4,15 +4,20 @@
 <br />
 <SearchInventoryComponent
     OnSearchInventory="OnInventorySearch"    
->
-</SearchInventoryComponent>
+></SearchInventoryComponent>
+
+@* pass the SearchTerm in to this component by parameter(property) *@
+<InventoryListComponent
+    SearchTerm="@searchTerm"> @* when rerendered will pass the searchTerm *@
+</InventoryListComponent>
 
 <br />
-SearchTerm: @searchTerm
+@* SearchTerm: @searchTerm *@
 
 @code {
     private string searchTerm = string.Empty;
 
+    // when trigger the page will rerendered
     private void OnInventorySearch(string searchTerm) // event handler
     {
         this.searchTerm = searchTerm;
