@@ -33,8 +33,8 @@ builder.Services.AddTransient<IViewInventoriesByNameUseCase, ViewInventoriesByNa
 //  example with when reload the web it's will disconnect the signalr 
 
 builder.Services.AddTransient<IAddInventoryUseCase, AddInventoryUseCase>();
-
 builder.Services.AddTransient<IEditInventoryUseCase, EditInventoryUseCase>();
+builder.Services.AddTransient<IViewInventoryByIdUseCase, ViewInventoryByIdUseCase>();
 
 var app = builder.Build();
 

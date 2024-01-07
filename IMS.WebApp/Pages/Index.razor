@@ -20,14 +20,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _inventories = (await ViewInventoriesByNameUseCase.ExecuteAsync()).ToList();
+        _inventories = (await ViewInventoriesByNameUseCase.ExecuteAsync("")).ToList();
 
-        var inventory = new Inventory { InventoryId = 1, InventoryName = "Bike Seat", Quantity = 101, Price = 2 };
+        var inventory = new Inventory { InventoryId = 1, InventoryName = "Bike Body", Quantity = 99, Price = 2 };
 
         await EditInventoryUseCase.ExecuteAsync(inventory);
 
         // doesn't use the new keyword for the usecase
         // return empty list when not found
-        _inventories = (await ViewInventoriesByNameUseCase.ExecuteAsync()).ToList();
+        _inventories = (await ViewInventoriesByNameUseCase.ExecuteAsync("")).ToList();
     }
 } 

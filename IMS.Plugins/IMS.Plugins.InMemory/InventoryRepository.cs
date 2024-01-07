@@ -42,10 +42,23 @@ namespace IMS.Plugins.InMemory
             return _inventories.Where(x => x.InventoryName.Contains(name, StringComparison.OrdinalIgnoreCase));
         }
 
+        public async Task<Inventory> GetInventoryByIdAsync(int inventoryId)
+        {
+            var inv = _inventories.FirstOrDefault(x => x.InventoryId == inventoryId);
+            var newInv = new Inventory
+            {
+                InventoryId = inv.InventoryId,
+                InventoryName = inv.InventoryName,
+                Price = inv.Price,
+                Quantity = inv.Quantity
+            };
+            return await Task.FromResult(newInv);
+        }
+
         public Task UpdateInventoryAsync(Inventory inventory)
         {
-            // if the inventory that pass through have the same name then return without edit
-            if (_inventories.Any(x => x.InventoryId == inventory.InventoryId &&
+            // if the inventory that pass through have the same name and difference id then return without edit
+            if (_inventories.Any(x => x.InventoryId != inventory.InventoryId &&
                 x.InventoryName.Equals(inventory.InventoryName, StringComparison.OrdinalIgnoreCase)))
                 { return Task.CompletedTask; }
 
