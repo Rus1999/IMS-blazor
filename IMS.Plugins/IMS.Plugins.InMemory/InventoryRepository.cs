@@ -16,8 +16,22 @@ namespace IMS.Plugins.InMemory
                 new Inventory() { InventoryId = 2, InventoryName = "Bike Body", Quantity = 10, Price = 15 },
                 new Inventory() { InventoryId = 3, InventoryName = "Bike Wheels", Quantity = 20, Price = 8 },
                 new Inventory() { InventoryId = 4, InventoryName = "Bike Pedels", Quantity = 20, Price = 1 },
-                new Inventory() { InventoryId = 7, InventoryName = "Punyarit Klaphachon", Quantity = 21, Price = 7 }
             };
+        }
+
+        public Task AddInventoryAsync(Inventory inventory)
+        {
+            // add inventory to inventory list
+            // check if the inventory is already exist or not by checking the name of inventory list that are already exists
+            if (_inventories.Any(x => x.InventoryName.Equals(inventory.InventoryName, StringComparison.OrdinalIgnoreCase)))
+                return Task.CompletedTask; // return without insert
+
+            // find max id
+            var maxId = _inventories.Max(x => x.InventoryId);
+            inventory.InventoryId = maxId + 1;
+
+            _inventories.Add(inventory);
+            return Task.CompletedTask;
         }
 
         public async Task<IEnumerable<Inventory>> GetInventoriesByNameAsync(string name)
@@ -26,6 +40,23 @@ namespace IMS.Plugins.InMemory
 
             // else return IEnumerable that contains name 
             return _inventories.Where(x => x.InventoryName.Contains(name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public Task UpdateInventoryAsync(Inventory inventory)
+        {
+            // if the inventory that pass through have the same name then return without edit
+            if (_inventories.Any(x => x.InventoryId == inventory.InventoryId &&
+                x.InventoryName.Equals(inventory.InventoryName, StringComparison.OrdinalIgnoreCase)))
+                { return Task.CompletedTask; }
+
+            var inv = _inventories.FirstOrDefault(x => x.InventoryId == inventory.InventoryId);
+            if (inv != null)
+            {
+                inv.InventoryName = inventory.InventoryName;
+                inv.Price = inventory.Price;
+                inv.Quantity = inventory.Quantity;
+            }
+            return Task.CompletedTask;
         }
     }
 }

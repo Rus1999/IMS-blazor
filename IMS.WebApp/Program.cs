@@ -32,6 +32,10 @@ builder.Services.AddTransient<IViewInventoriesByNameUseCase, ViewInventoriesByNa
 // AddScoped the instance of the class is store as long as the life time of signalr and will be reuse the same instance with it's lifetime
 //  example with when reload the web it's will disconnect the signalr 
 
+builder.Services.AddTransient<IAddInventoryUseCase, AddInventoryUseCase>();
+
+builder.Services.AddTransient<IEditInventoryUseCase, EditInventoryUseCase>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
