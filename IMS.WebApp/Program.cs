@@ -1,6 +1,7 @@
 using IMS.Plugins.InMemory;
 using IMS.UseCases.Inventories;
 using IMS.UseCases.PluginInterfaces;
+using IMS.UseCases.Products;
 using IMS.WebApp.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -22,6 +23,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 //  and will stay when the application is running
 //  when mutiple user it will send the same instance to use
 builder.Services.AddSingleton<IInventoryRepository, InventoryRepository>(); // mapping the interface with the implementation
+builder.Services.AddSingleton<IProductRepository, ProductRepository>();
 
 // when component is initiailize the framework will provide the instance of ViewInventoriesByNameUseCase class
 // Transient indicate that whenever we require the instance of the class
@@ -35,6 +37,10 @@ builder.Services.AddTransient<IViewInventoriesByNameUseCase, ViewInventoriesByNa
 builder.Services.AddTransient<IAddInventoryUseCase, AddInventoryUseCase>();
 builder.Services.AddTransient<IEditInventoryUseCase, EditInventoryUseCase>();
 builder.Services.AddTransient<IViewInventoryByIdUseCase, ViewInventoryByIdUseCase>();
+
+builder.Services.AddTransient<IViewProductsByNameUseCase, ViewProductsByNameUseCase>();
+builder.Services.AddTransient<IAddProductUseCase, AddProductUseCase>();
+
 
 var app = builder.Build();
 
