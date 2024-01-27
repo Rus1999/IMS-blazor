@@ -86,5 +86,23 @@ namespace IMS.Plugins.InMemory
 
             return _products.Where(x => x.ProductName.Contains(name, StringComparison.OrdinalIgnoreCase));
         }
+
+        public Task UpdateProductAsync(Product product)
+        {
+            // To prevent different product from having the same name
+            if (_products.Any(x => x.ProductId != product.ProductId &&
+                    x.ProductName.ToLower() == product.ProductName.ToLower())) return Task.CompletedTask;
+
+            var prod = _products.FirstOrDefault(x => x.ProductId == product.ProductId);
+            if (prod != null)
+            {
+                prod.ProductName = product.ProductName;
+                prod.Price = product.Price;
+                prod.Quantity = product.Quantity;
+                prod.ProductInventories = product.ProductInventories;
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }
