@@ -40,6 +40,7 @@ builder.Services.AddTransient<IViewInventoryByIdUseCase, ViewInventoryByIdUseCas
 
 builder.Services.AddTransient<IViewProductsByNameUseCase, ViewProductsByNameUseCase>();
 builder.Services.AddTransient<IAddProductUseCase, AddProductUseCase>();
+builder.Services.AddTransient<IViewProductByIdUseCase, ViewProductByIdUseCase>();
 
 
 var app = builder.Build();
