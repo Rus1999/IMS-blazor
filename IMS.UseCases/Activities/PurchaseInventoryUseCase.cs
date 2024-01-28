@@ -17,14 +17,15 @@ namespace IMS.UseCases.Activities
             IInventoryRepository inventoryRepository)
         {
             this.inventoryTransactionRepository = inventoryTransactionRepository;
+            this.inventoryRepository = inventoryRepository;
         }
 
         public async Task ExecuteAsync(string poNumber, Inventory inventory, int quantity, string doneBy)
         {
-            // insert a record in the stransaction table
+            //insert a record in the transaction table
             inventoryTransactionRepository.PurchaseAsync(poNumber, inventory, quantity, doneBy, inventory.Price);
 
-            // increase the quantity
+            //increase the quantity
             inventory.Quantity += quantity;
             await this.inventoryRepository.UpdateInventoryAsync(inventory);
         }
