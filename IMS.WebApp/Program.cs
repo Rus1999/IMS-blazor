@@ -26,6 +26,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<IInventoryRepository, InventoryRepository>(); // mapping the interface with the implementation
 builder.Services.AddSingleton<IProductRepository, ProductRepository>();
 builder.Services.AddSingleton<IInventoryTransactionRepository, InventoryTransactionRepository>();
+builder.Services.AddSingleton<IProductTransactionRepository, ProductTransactionRepository>();
 
 // when component is initiailize the framework will provide the instance of ViewInventoriesByNameUseCase class
 // Transient indicate that whenever we require the instance of the class
@@ -46,6 +47,7 @@ builder.Services.AddTransient<IViewProductByIdUseCase, ViewProductByIdUseCase>()
 builder.Services.AddTransient<IEditProductUseCase, EditProductUseCase>();
 
 builder.Services.AddTransient<IPurchaseInventoryUseCase, PurchaseInventoryUseCase>();
+builder.Services.AddTransient<IProduceProductUseCase, ProduceProductUseCase>();
 
 var app = builder.Build();
 
