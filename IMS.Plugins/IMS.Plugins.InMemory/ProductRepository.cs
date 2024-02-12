@@ -17,7 +17,7 @@ namespace IMS.Plugins.InMemory
             _products = new List<Product>()
             {
                 new Product() { ProductId = 1, ProductName = "Bike", Quantity = 10, Price = 150 },
-                new Product() { ProductId = 2, ProductName = "Car", Quantity = 10, Price = 25000 }
+                new Product() { ProductId = 2, ProductName = "Car", Quantity = 5, Price = 25000 }
             };
         }
 
@@ -45,7 +45,7 @@ namespace IMS.Plugins.InMemory
 
         public async Task<Product?> GetProductByIdAsync(int productId)
         {
-            var prod = _products.FirstOrDefault(_products.FirstOrDefault(x => x.ProductId == productId));
+            var prod = _products.FirstOrDefault(x => x.ProductId == productId);
             var newProd = new Product();
             if (prod != null)
             {

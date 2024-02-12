@@ -74,7 +74,8 @@
 
     private async Task Produce()
     {
-        await ProduceProductUseCase.ExecuteAsync(this.produceViewModel.ProductionNumber,
+        await ProduceProductUseCase.ExecuteAsync(
+            this.produceViewModel.ProductionNumber,
             this.selectedProduct,
             this.produceViewModel.QuantityToProduce,
             "Rus");
