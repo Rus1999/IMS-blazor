@@ -1,11 +1,13 @@
 ﻿@page "/inventoryreport"
 
 @inject ISearchInventoryTransactionsUseCase SearchInventoryTransactionsUseCase
+@inject IJSRuntime JSRuntime
 
 <h3>Inventory Transactions</h3>
 <br />
 
-<div class="row"
+<div id="printarea">
+    <div class="row">
     <div class="col">
         <label for="inv">Inventory Name</label>
         <input type="text" id="inv" class="form-control" @bind-value="invName" />
@@ -35,49 +37,50 @@
         <button type="button" class="btn btn-primary form-control" @onclick="PrintReport">Print</button>
     </div>
 </div>
-<br />
-@if (inventoryTransactions != null)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Inventory</th>
-                <th>Activity</th>
-                <th>Qty Before</th>
-                <th>Qty After</th>
-                <th>Unit Price</th>
-                <th>PO#</th>
-                <th>Production#</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var it in inventoryTransactions)
-            {
+    <br />
+    @if (inventoryTransactions != null)
+    {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@it.TransactionDate.ToString("MM/dd/yyyy")</td>
-                    <td>@it.Inventory.InventoryName</td>
-                    <td>
-                        @if (it.ActivityType == InventoryTransactionType.PurchaseInventory)
-                        {
-                            <text>Purchase</text>
-                        }
-                        else if (it.ActivityType == InventoryTransactionType.ProduceProduct)
-                        {
-                            <text>Produce</text>
-                        }
-                    </td>
-                    <td>@it.QauntityBefore</td>
-                    <td>@it.QauntityAfter</td>
-                    <td>@it.UnitPrice.ToString("c")</td>
-                    <td>@it.PONumber</td>
-                    <td>@it.ProductionNumber</td>
+                    <th>Date</th>
+                    <th>Inventory</th>
+                    <th>Activity</th>
+                    <th>Qty Before</th>
+                    <th>Qty After</th>
+                    <th>Unit Price</th>
+                    <th>PO#</th>
+                    <th>Production#</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var it in inventoryTransactions)
+                {
+                    <tr>
+                        <td>@it.TransactionDate.ToString("MM/dd/yyyy")</td>
+                        <td>@it.Inventory.InventoryName</td>
+                        <td>
+                            @if (it.ActivityType == InventoryTransactionType.PurchaseInventory)
+                            {
+                                <text>Purchase</text>
+                            }
+                            else if (it.ActivityType == InventoryTransactionType.ProduceProduct)
+                            {
+                                <text>Produce</text>
+                            }
+                        </td>
+                        <td>@it.QauntityBefore</td>
+                        <td>@it.QauntityAfter</td>
+                        <td>@it.UnitPrice.ToString("c")</td>
+                        <td>@it.PONumber</td>
+                        <td>@it.ProductionNumber</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
+    }
+</div>
 @code {
     private string invName = string.Empty;
     private DateTime? dateFrom;
@@ -100,6 +103,6 @@
 
     private void PrintReport()
     {
-        
+        JSRuntime.InvokeVoidAsync("print");
     }
 }
