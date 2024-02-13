@@ -22,12 +22,6 @@ namespace IMS.Plugins.InMemory
         {
             var inventories = (await inventoryRepository.GetInventoriesByNameAsync(string.Empty)).ToList();
 
-            /*
-                select *
-                from inventorytransactions it
-                join inventories inv on it.inventoryid = inv.inventoryid
-              
-            */
             var query = from it in this._inventoryTransactions
                         join inv in inventories on it.InventoryId equals inv.InventoryId
                         where
