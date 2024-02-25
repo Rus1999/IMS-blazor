@@ -1,5 +1,7 @@
 ﻿using IMS.CoreBusiness;
+using IMS.Plugins.EFCoreSqlServer;
 using IMS.UseCases.PluginInterfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,22 +10,20 @@ using System.Threading.Tasks;
 
 namespace IMS.Plugins.InMemory
 {
-    public class InventoryTransactionRepository : IInventoryTransactionRepository
+    public class InventoryTransactionEFCoreRepository : IInventoryTransactionRepository
     {
-        private readonly IInventoryRepository inventoryRepository;
-        public List<InventoryTransaction> _inventoryTransactions = new List<InventoryTransaction>();
+        private readonly IMSContext db;
 
-        public InventoryTransactionRepository(IInventoryRepository inventoryRepository)
+        public InventoryTransactionEFCoreRepository(IMSContext db)
         {
-            this.inventoryRepository = inventoryRepository;
+            this.db = db;
         }
 
         public async Task<IEnumerable<InventoryTransaction>> GetInventoryTransactionsAsync(string inventoryName, DateTime? dateFrom, DateTime? dateTo, InventoryTransactionType? transactionType)
         {
-            var inventories = (await inventoryRepository.GetInventoriesByNameAsync(string.Empty)).ToList();
 
-            var query = from it in this._inventoryTransactions
-                        join inv in inventories on it.InventoryId equals inv.InventoryId
+            var query = from it in this.db.InventoryTransactions
+                        join inv in this.db.Inventories on it.InventoryId equals inv.InventoryId
                         where
                             (string.IsNullOrWhiteSpace(inventoryName) || inv.InventoryName.ToLower().IndexOf(inventoryName.ToLower()) >= 0)
                             &&
@@ -32,27 +32,14 @@ namespace IMS.Plugins.InMemory
                             (!dateTo.HasValue || it.TransactionDate <= dateTo.Value.Date)
                             &&
                             (!transactionType.HasValue || it.ActivityType == transactionType)
-                        select new InventoryTransaction
-                        {
-                            Inventory = inv,
-                            InventoryTransactionId = it.InventoryTransactionId,
-                            PONumber = it.PONumber,
-                            ProductionNumber = it.ProductionNumber,
-                            InventoryId = it.InventoryId,
-                            QauntityBefore = it.QauntityBefore,
-                            ActivityType = it.ActivityType,
-                            QauntityAfter = it.QauntityAfter,
-                            TransactionDate = it.TransactionDate,
-                            DoneBy = it.DoneBy,
-                            UnitPrice = it.UnitPrice
-                        };
+                        select it;
 
-            return query;
+            return await query.Include(x => x.Inventory).ToListAsync();
         }
 
-        public Task ProduceAsync(string productionNumber, Inventory inventory, int quantityToConsume, string doneBy, double price)
+        public async Task ProduceAsync(string productionNumber, Inventory inventory, int quantityToConsume, string doneBy, double price)
         {
-            this._inventoryTransactions.Add(new InventoryTransaction
+            this.db.InventoryTransactions.Add(new InventoryTransaction
             {
                 ProductionNumber = productionNumber,
                 InventoryId = inventory.InventoryId,
@@ -64,12 +51,12 @@ namespace IMS.Plugins.InMemory
                 UnitPrice = price
             });
 
-            return Task.CompletedTask;
+            await this.db.SaveChangesAsync();
         }
 
-        public Task PurchaseAsync(string poNumber, Inventory inventory, int quantity, string doneBy, double price)
+        public async Task PurchaseAsync(string poNumber, Inventory inventory, int quantity, string doneBy, double price)
         {
-            this._inventoryTransactions.Add(new InventoryTransaction
+            this.db.InventoryTransactions.Add(new InventoryTransaction
                 {
                     PONumber = poNumber,
                     InventoryId = inventory.InventoryId,
@@ -81,7 +68,7 @@ namespace IMS.Plugins.InMemory
                     UnitPrice = price
                 });
 
-            return Task.CompletedTask;
+            await this.db.SaveChangesAsync();
         }
     }
 }
