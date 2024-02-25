@@ -4,6 +4,7 @@ using IMS.Plugins.EFCoreSqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Plugins.EFCoreSqlServer.Migrations
 {
     [DbContext(typeof(IMSContext))]
-    partial class IMSContextModelSnapshot : ModelSnapshot
+    [Migration("20240225114815_Init5")]
+    partial class Init5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

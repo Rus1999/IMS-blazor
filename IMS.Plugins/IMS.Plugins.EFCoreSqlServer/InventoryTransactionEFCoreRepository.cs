@@ -1,5 +1,4 @@
 ﻿using IMS.CoreBusiness;
-using IMS.Plugins.EFCoreSqlServer;
 using IMS.UseCases.PluginInterfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,16 +20,15 @@ namespace IMS.Plugins.EFCoreSqlServer
 
         public async Task<IEnumerable<InventoryTransaction>> GetInventoryTransactionsAsync(string inventoryName, DateTime? dateFrom, DateTime? dateTo, InventoryTransactionType? transactionType)
         {
-            using var db = this.contextFactory.CreateDbContext();
+            using var db = contextFactory.CreateDbContext();
+
             var query = from it in db.InventoryTransactions
                         join inv in db.Inventories on it.InventoryId equals inv.InventoryId
                         where
                             (string.IsNullOrWhiteSpace(inventoryName) || inv.InventoryName.ToLower().IndexOf(inventoryName.ToLower()) >= 0)
                             &&
-                            (!dateFrom.HasValue || it.TransactionDate >= dateFrom.Value.Date)
-                            &&
-                            (!dateTo.HasValue || it.TransactionDate <= dateTo.Value.Date)
-                            &&
+                            (!dateFrom.HasValue || it.TransactionDate >= dateFrom.Value.Date) &&
+                            (!dateTo.HasValue || it.TransactionDate <= dateTo.Value.Date) &&
                             (!transactionType.HasValue || it.ActivityType == transactionType)
                         select it;
 
@@ -39,7 +37,8 @@ namespace IMS.Plugins.EFCoreSqlServer
 
         public async Task ProduceAsync(string productionNumber, Inventory inventory, int quantityToConsume, string doneBy, double price)
         {
-            using var db = this.contextFactory.CreateDbContext();
+            using var db = contextFactory.CreateDbContext();
+
             db.InventoryTransactions.Add(new InventoryTransaction
             {
                 ProductionNumber = productionNumber,
@@ -57,18 +56,19 @@ namespace IMS.Plugins.EFCoreSqlServer
 
         public async Task PurchaseAsync(string poNumber, Inventory inventory, int quantity, string doneBy, double price)
         {
-            using var db = this.contextFactory.CreateDbContext();
+            using var db = contextFactory.CreateDbContext();
+
             db.InventoryTransactions.Add(new InventoryTransaction
-                {
-                    PONumber = poNumber,
-                    InventoryId = inventory.InventoryId,
-                    QauntityBefore = inventory.Quantity,
-                    ActivityType = InventoryTransactionType.PurchaseInventory,
-                    QauntityAfter = inventory.Quantity + quantity,
-                    TransactionDate = DateTime.Now,
-                    DoneBy = doneBy,
-                    UnitPrice = price
-                });
+            {
+                PONumber = poNumber,
+                InventoryId = inventory.InventoryId,
+                QauntityBefore = inventory.Quantity,
+                ActivityType = InventoryTransactionType.PurchaseInventory,
+                QauntityAfter = inventory.Quantity + quantity,
+                TransactionDate = DateTime.Now,
+                DoneBy = doneBy,
+                UnitPrice = price
+            });
 
             await db.SaveChangesAsync();
         }

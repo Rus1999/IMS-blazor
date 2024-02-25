@@ -4,12 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IMS.Plugins.EFCoreSqlServer
 {
-    // abstraction by implementations of IInventoryRepository then the InventoryRepository class can be use as a plugin
     public class InventoryEFCoreRepository : IInventoryRepository
     {
         private readonly IDbContextFactory<IMSContext> contextFactory;
 
-        public InventoryEFCoreRepository(IDbContextFactory<IMSContext> contextFactory) 
+        public InventoryEFCoreRepository(IDbContextFactory<IMSContext> contextFactory)
         {
             this.contextFactory = contextFactory;
         }

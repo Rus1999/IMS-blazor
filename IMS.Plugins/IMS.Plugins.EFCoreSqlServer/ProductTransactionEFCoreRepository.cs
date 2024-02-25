@@ -1,5 +1,4 @@
 ﻿using IMS.CoreBusiness;
-using IMS.CoreBusiness.Validations;
 using IMS.UseCases.PluginInterfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,11 +17,12 @@ namespace IMS.Plugins.EFCoreSqlServer
         private readonly IDbContextFactory<IMSContext> contextFactory;
 
         public ProductTransactionEFCoreRepository(
-            IProductRepository productRepository, 
+            IProductRepository productRepository,
             IInventoryTransactionRepository inventoryTransactionRepository,
             IInventoryRepository inventoryRepository,
             IDbContextFactory<IMSContext> contextFactory)
         {
+            using var db = contextFactory.CreateDbContext();
             this.productRepository = productRepository;
             this.inventoryTransactionRepository = inventoryTransactionRepository;
             this.inventoryRepository = inventoryRepository;
@@ -31,11 +31,12 @@ namespace IMS.Plugins.EFCoreSqlServer
 
         public async Task ProduceAsync(string productionNumber, Product product, int quantity, string doneBy)
         {
-            using var db = this.contextFactory.CreateDbContext();
+            using var db = contextFactory.CreateDbContext();
+
             var prod = await this.productRepository.GetProductByIdAsync(product.ProductId);
             if (prod != null)
             {
-                foreach(var pi in prod.ProductInventories)
+                foreach (var pi in prod.ProductInventories)
                 {
                     if (pi.Inventory != null)
                     {
@@ -71,7 +72,8 @@ namespace IMS.Plugins.EFCoreSqlServer
 
         public async Task SellProductAsync(string salesOrderNumber, Product product, int quantity, double unitPrice, string doneBy)
         {
-            using var db = this.contextFactory.CreateDbContext();
+            using var db = contextFactory.CreateDbContext();
+
             db.ProductTransactions.Add(new ProductTransaction
             {
                 ActivityType = ProductTransactionType.SellProduct,
@@ -89,16 +91,15 @@ namespace IMS.Plugins.EFCoreSqlServer
 
         public async Task<IEnumerable<ProductTransaction>> GetProductTransactionsAsync(string productName, DateTime? dateFrom, DateTime? dateTo, ProductTransactionType? transactionType)
         {
-            using var db = this.contextFactory.CreateDbContext();
+            using var db = contextFactory.CreateDbContext();
+
             var query = from pt in db.ProductTransactions
                         join prod in db.Products on pt.ProductId equals prod.ProductId
                         where
                             (string.IsNullOrWhiteSpace(productName) || prod.ProductName.ToLower().IndexOf(productName.ToLower()) >= 0)
                             &&
-                            (!dateFrom.HasValue || pt.TransactionDate >= dateFrom.Value.Date)
-                            &&
-                            (!dateTo.HasValue || pt.TransactionDate <= dateTo.Value.Date)
-                            &&
+                            (!dateFrom.HasValue || pt.TransactionDate >= dateFrom.Value.Date) &&
+                            (!dateTo.HasValue || pt.TransactionDate <= dateTo.Value.Date) &&
                             (!transactionType.HasValue || pt.ActivityType == transactionType)
                         select pt;
 

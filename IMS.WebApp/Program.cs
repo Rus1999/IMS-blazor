@@ -8,6 +8,7 @@ using IMS.UseCases.Reports;
 using IMS.WebApp.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,10 +32,22 @@ builder.Services.AddSingleton<WeatherForecastService>();
 // AddSingleton indicate that when the application require the instance of the class it will create and store the instance in the application
 //  and will stay when the application is running
 //  when mutiple user it will send the same instance to use
-builder.Services.AddSingleton<IInventoryRepository, InventoryRepository>(); // mapping the interface with the implementation
-builder.Services.AddSingleton<IProductRepository, ProductRepository>();
-builder.Services.AddSingleton<IInventoryTransactionRepository, InventoryTransactionRepository>();
-builder.Services.AddSingleton<IProductTransactionRepository, ProductTransactionRepository>();
+if (builder.Environment.IsEnvironment("TESTING"))
+{
+    StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
+
+    builder.Services.AddSingleton<IInventoryRepository, InventoryRepository>(); // mapping the interface with the implementation
+    builder.Services.AddSingleton<IProductRepository, ProductRepository>();
+    builder.Services.AddSingleton<IInventoryTransactionRepository, InventoryTransactionRepository>();
+    builder.Services.AddSingleton<IProductTransactionRepository, ProductTransactionRepository>();
+}
+else
+{
+    builder.Services.AddTransient<IInventoryRepository, InventoryEFCoreRepository>(); // mapping the interface with the implementation
+    builder.Services.AddTransient<IProductRepository, ProductEFCoreRepository>();
+    builder.Services.AddTransient<IInventoryTransactionRepository, InventoryTransactionEFCoreRepository>();
+    builder.Services.AddTransient<IProductTransactionRepository, ProductTransactionEFCoreRepository>();
+}
 
 // when component is initiailize the framework will provide the instance of ViewInventoriesByNameUseCase class
 // Transient indicate that whenever we require the instance of the class
