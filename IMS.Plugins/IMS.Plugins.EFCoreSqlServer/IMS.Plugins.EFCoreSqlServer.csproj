@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\IMS.CoreBusiness\IMS.CoreBusiness.csproj" />
+    <ProjectReference Include="..\..\IMS.UseCases\IMS.UseCases.csproj" />
   </ItemGroup>
 
 </Project>
