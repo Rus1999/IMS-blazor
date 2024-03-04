@@ -9,13 +9,27 @@ using IMS.WebApp.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var constr = builder.Configuration.GetConnectionString("InventoryManagement");
+
+// Configure EF Core for Identity
+builder.Services.AddDbContext<AccountDbContext>(options =>
+{
+    options.UseSqlServer(constr);
+});
+
+// Configure Identity
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+    options.SignIn.RequireConfirmedEmail = false;
+}).AddEntityFrameworkStores<AccountDbContext>();
 
 builder.Services.AddDbContextFactory<IMSContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryManagement"));
+    options.UseSqlServer(constr);
 });
 
 // registered the service for all the pipeline middleware
@@ -89,6 +103,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
