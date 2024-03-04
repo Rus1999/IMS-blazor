@@ -7,7 +7,7 @@
 @inject ISellProductUseCase SellProductUseCase
 @inject IJSRuntime JSRuntime
 
-
+@attribute [Authorize(Policy = "Sales")]
 <h3>Sell Product</h3>
 <br />
 <EditForm id="sell-form" Model="sellViewModel" OnValidSubmit="Sell">

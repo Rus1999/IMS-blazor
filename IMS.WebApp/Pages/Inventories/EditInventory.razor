@@ -5,6 +5,8 @@
 @inject IViewInventoryByIdUseCase ViewInventoryByIdUseCase
 @inject IEditInventoryUseCase EditInventoryUseCaes
 
+@attribute [Authorize(Policy = "Inventory")]
+
 <h3>EditInventory</h3>
 <br />
 
