@@ -3,10 +3,12 @@
 @using static IMS.WebApp.Controls.Common.AutoCompleteComponent
 
 @inject IPurchaseInventoryUseCase PurchaseInventoryUseCase
-@inject IViewInventoriesByNameUseCase ViewInventoriesByNameUseCase 
+@inject IViewInventoriesByNameUseCase ViewInventoriesByNameUseCase
 @inject IViewInventoryByIdUseCase ViewInventoryByIdUseCase
 
+<!-- allows developer to inject javascript -->
 @inject IJSRuntime JSRuntime
+
 
 <h3>Purchase Inventory</h3>
 <br />
@@ -22,52 +24,71 @@
     <div class="card">
         <div class="card-body">
             <div class="form-group">
-                <AutoCompleteComponent Label="Inventory to Purchases"
-                        SearchFunction="SearchInventory"
-                        OnItemSelected="OnItemSelected">
-                    </AutoCompleteComponent>
-                    <input type="hidden" value="@purchaseViewModel.InventoryId" />
-                    @if (purchaseViewModel.InventoryId > 0 && purchaseViewModel.InventoryPrice >= 0)
-                    {
-                        <text>Price:</text>    
-                        @purchaseViewModel.InventoryPrice.ToString("c");
-                    }
+                <AutoCompleteComponent Label="Inventory to Purchase"
+                                       SearchFunction="SearchInventory"
+                                       OnItemSelected="OnItemSelected">
+                </AutoCompleteComponent>
+                <input type="hidden" value="@purchaseViewModel.InventoryId" />
+                @if (purchaseViewModel.InventoryId > 0 && purchaseViewModel.InventoryPrice >= 0)
+                {
+                    <text>Price:</text>
+                    @purchaseViewModel.InventoryPrice.ToString("c")
+                    ;
+                }
             </div>
         </div>
     </div>
-
     <br />
     <div class="form-group">
         <label for="qty">Quantity</label>
         <InputNumber id="qty" @bind-Value="purchaseViewModel.QuantityToPurchase" class="form-control"></InputNumber>
     </div>
-    <br />
 
+    <br />
     <button type="submit" class="btn btn-primary">Purchase</button>
 </EditForm>
 
+
 @code {
+    private AuthenticationState? authenticationState;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+
     private PurchaseViewModel purchaseViewModel = new PurchaseViewModel();
     private Inventory? selectedInventory = null;
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationStateTask != null)
+            authenticationState = await authenticationStateTask;
+    }
+
+    // firstRender is set to true when the page is just loaded.  After the first render, firstRender will be set to false when the page re-renders
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
 
         if (firstRender)
         {
+            // javascript name here is PreventFormSubmission.  This is a static asset, so the method is located in the wwwroot folder
             JSRuntime.InvokeVoidAsync("PreventFormSubmition", "purchase-form");
         }
     }
 
     private async Task Purchase()
     {
-        await PurchaseInventoryUseCase.ExecuteAsync(
-            this.purchaseViewModel.PONumber,
-            this.selectedInventory,
-            this.purchaseViewModel.QuantityToPurchase,
-            "Rus"
-        );
+        if (this.selectedInventory != null &&
+           authenticationState != null &&
+           !string.IsNullOrWhiteSpace(authenticationState.User?.Identity?.Name))
+        {
+            await PurchaseInventoryUseCase.ExecuteAsync(
+                this.purchaseViewModel.PONumber,
+                this.selectedInventory,
+                this.purchaseViewModel.QuantityToPurchase,
+                authenticationState.User.Identity.Name
+            );
+        }
 
         this.purchaseViewModel = new PurchaseViewModel();
         this.selectedInventory = null;
@@ -76,7 +97,6 @@
     private async Task<List<ItemViewModel>?> SearchInventory(string name)
     {
         var list = await ViewInventoriesByNameUseCase.ExecuteAsync(name);
-
         if (list == null) return null;
 
         return list.Select(x => new ItemViewModel { Id = x.InventoryId, Name = x.InventoryName })?.ToList();
@@ -89,4 +109,5 @@
         purchaseViewModel.InventoryId = item.Id;
         purchaseViewModel.InventoryPrice = this.selectedInventory.Price;
     }
+
 }
